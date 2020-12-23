@@ -23,9 +23,9 @@ function setup() {
   
   createCanvas(400,400);
   
-  FoodGroup = createGroup();
-  obstacleGroup = createGroup();
-  TimeGroup = createGroup();
+  FoodGroup = new Group();
+  obstacleGroup = new Group();
+  TimeGroup = new Group();
   
   monkey = createSprite(50, 250, 10, 10);
   monkey.addAnimation("monkey",monkey_running);
@@ -60,10 +60,8 @@ function draw() {
   if(gameState === PLAY){
       monkey.changeAnimation("running", monkey_running);
     
-    survialTime = Math.ceil(frameCount/frameRate());
-     
-    if (ground.x < 0){
-      ground.x = ground.width/2;
+    survialTime = Math.ceil(frameCount/frameRate()); 
+    
     }
     if(keyDown("space")) {
         monkey.velocityY = -12;
@@ -76,8 +74,6 @@ function draw() {
  
   monkey.velocityY = monkey.velocityY + 0.8;
  
-  obstacleGroup.setLifetimeEach(-1);
- 
   food();
   obstacles();
 
@@ -86,11 +82,15 @@ function draw() {
         gameState = END;
     
     }
+  if (ground.x < 0){
+      ground.x = ground.width/2;
   }
   
    if (gameState === END) {
-     obstacleGroup.destroyEach();
-    FoodGroup.destroyEach();
+     obstacleGroup.setVelocityXEach(0);
+     FoodGroup.setVelocityXEach(0);
+     obstacleGroup.setLifetimeEach(-1);
+     FoodGroup.setLifetimeEach(-1);
      survialTime.visible = false;
      
      stroke("red");
@@ -114,10 +114,9 @@ function food() {
     banana.y = Math.round(random(120,200));
     banana.scale = 0.1;
     
+    FoodGroup.add(banana);
     banana.velocityX = -3;
     banana.lifetime = 200;
-    
-    FoodGroup.add(banana);
   }
 }
 
@@ -125,7 +124,7 @@ function obstacles() {
   if (frameCount % 300 === 0){
     obstacle = createSprite(250,325,10,10);
     obstacle.addImage(obstacleImage);
-    obstacle.velocityX = -3;
+   obstacle.velocityX = -3;
     obstacle.lifetime = 200;
     obstacle.scale = 0.1 ;
      obstacleGroup.add(obstacle);
